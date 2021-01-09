@@ -1,0 +1,35 @@
+import { Injectable } from '@angular/core';
+import { Student } from './student';
+import { Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+};
+
+@Injectable({
+  providedIn: 'root',
+})
+export class StudentService {
+  private studentApiUrl = 'http://localhost:3000/students';
+  constructor(private http: HttpClient) {}
+  getStudents(): Observable<Student[]> {
+    return this.http.get<Student[]>(this.studentApiUrl);
+  }
+  getStudent(id: number): Observable<Student> {
+    const url = `${this.studentApiUrl}/${id}`;
+    return this.http.get<Student>(url);
+  }
+  updateStudent(student: Student): Observable<any> {
+    const url = `${this.studentApiUrl}/${student.id}`;
+    return this.http.put(url, student, httpOptions);
+  }
+  createStudent(student: Student): Observable<Student> {
+    return this.http.post<Student>(this.studentApiUrl, student, httpOptions);
+  }
+  deleteStudent(student: Student | number): Observable<Student> {
+    const id = typeof student === 'number' ? student : student.id;
+    const url = `${this.studentApiUrl}/${id}`;
+    return this.http.delete<Student>(url, httpOptions);
+  }
+}
